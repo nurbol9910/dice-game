@@ -1,21 +1,33 @@
-// Тоглогчийн ээлжийг хадгалах хувьсагч, First Player = 0, Second Player = 1
-var activePlayer = 0;
-
-// Тоглогчдын цуглуулсан оноог хадгалах хувьсагч
-var scores = [0, 0];
-
-// Тоглогчийн ээлжин дээр цуглуулж байгаа хувьсагч
-var roundScore = 0;
-
 // Программ эхлэхэд бэлтэх
+var activePlayer, scores, roundScore;
 var diceDOM = document.querySelector(".dice");
 
-document.getElementById("score-0").textContent = 0;
-document.getElementById("score-1").textContent = 0;
-document.getElementById("current-0").textContent = 0;
-document.getElementById("current-1").textContent = 0;
+ResetGame();
 
-diceDOM.style.display = "none";
+function ResetGame() {
+  activePlayer = 0;
+  scores = [0, 0];
+  roundScore = 0;
+
+  document.getElementById("name-0").textContent = "Player 1";
+  document.getElementById("name-1").textContent = "Player 2";
+
+  document.querySelector(".player-0-panel").classList.add("active");
+  document.querySelector(".player-1-panel").classList.remove("active");
+
+  document.querySelector(".player-0-panel").classList.remove("winner");
+  document.querySelector(".player-1-panel").classList.remove("winner");
+
+  document.getElementById("score-0").textContent = 0;
+  document.getElementById("score-1").textContent = 0;
+  document.getElementById("current-0").textContent = 0;
+  document.getElementById("current-1").textContent = 0;
+
+  diceDOM.style.display = "none";
+
+  document.querySelector(".btn-roll").style.visibility = "visible";
+  document.querySelector(".btn-hold").style.visibility = "visible";
+}
 
 //Шоог шидэх эвент листенер
 document.querySelector(".btn-roll").addEventListener("click", function () {
@@ -34,25 +46,39 @@ document.querySelector(".btn-roll").addEventListener("click", function () {
     roundScore = roundScore + diceNumber;
     document.getElementById("current-" + activePlayer).textContent = roundScore;
   } else {
-    // 1 буусан тул тоглогчийн ээлжийг сольж өгнө
-    // Current оноог 0-лэх, мөн roundScore-г 0-лэнэ
-    roundScore = 0;
-    document.getElementById("current-" + activePlayer).textContent = 0;
-    // Шоог түр алга болгоно
-    diceDOM.style.display = "none";
-
-    // Улаан цгийг арилгах
-    document
-      .querySelector(".player-" + activePlayer + "-panel")
-      .classList.toggle("active");
-
-    // Хэрэв идэвхитэй тоглогч 0 байвал түүнийг 1 болгох,
-    // үгүй бол 0 болгох
-    activePlayer === 0 ? (activePlayer = 1) : (activePlayer = 0);
-
-    // Улаан цэгийг шилжүүлэх
-    document
-      .querySelector(".player-" + activePlayer + "-panel")
-      .classList.toggle("active");
+    ChangePlayer();
   }
 });
+
+// Цуглуулсан оноогоо нэмэх
+document.querySelector(".btn-hold").addEventListener("click", function () {
+  scores[activePlayer] = scores[activePlayer] + roundScore;
+  document.getElementById("score-" + activePlayer).textContent =
+    scores[activePlayer];
+  if (scores[activePlayer] >= 10) {
+    roundScore = 0;
+    document.getElementById("current-" + activePlayer).textContent = roundScore;
+    document
+      .querySelector(".player-" + activePlayer + "-panel")
+      .classList.remove("active");
+    document
+      .querySelector(".player-" + activePlayer + "-panel")
+      .classList.add("winner");
+    document.getElementById("name-" + activePlayer).textContent = "WINNER!";
+    document.querySelector(".btn-roll").style.visibility = "hidden";
+    document.querySelector(".btn-hold").style.visibility = "hidden";
+  } else {
+    ChangePlayer();
+  }
+});
+
+function ChangePlayer() {
+  roundScore = 0;
+  document.getElementById("current-" + activePlayer).textContent = 0;
+  diceDOM.style.display = "none";
+  activePlayer === 0 ? (activePlayer = 1) : (activePlayer = 0);
+  document.querySelector(".player-0-panel").classList.toggle("active");
+  document.querySelector(".player-1-panel").classList.toggle("active");
+}
+
+document.querySelector(".btn-new").addEventListener("click", ResetGame);
