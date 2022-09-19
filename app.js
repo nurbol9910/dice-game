@@ -64,7 +64,7 @@ document.querySelector(".btn-hold").addEventListener("click", function () {
     scores[activePlayer] = scores[activePlayer] + roundScore;
     document.getElementById("score-" + activePlayer).textContent =
       scores[activePlayer];
-    if (scores[activePlayer] >= 10) {
+    if (scores[activePlayer] >= 100) {
       isNewGame = false;
 
       diceDOM.style.display = "none";
